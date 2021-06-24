@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_todo/database.dart';
-import 'add_screen.dart';
-import 'model.dart';
+import '../controller/controller.dart';
+import './add_screen.dart';
+import '../model/model.dart';
 
 class TaskBody extends StatefulWidget {
   @override
@@ -15,6 +15,7 @@ class _TaskBodyState extends State<TaskBody> {
   int taskIdForUpdate;
   bool isChaked = false;
   // var itemCount;
+  final Controller _con = Controller();
 
   @override
   void initState() {
@@ -24,7 +25,7 @@ class _TaskBodyState extends State<TaskBody> {
 
   updateTaskList() {
     setState(() {
-      _tasksList = DBProvider.db.getTasks();
+      _tasksList = _con.getTask();
       // itemCount = DBProvider.db.getCount();
     });
   }
@@ -75,7 +76,7 @@ class _TaskBodyState extends State<TaskBody> {
                           color: Colors.white, size: 35.0),
                       onTap: () {
                         setState(() {
-                          DBProvider.db.deleteAll();
+                          _con.deleteAll();
                           updateTaskList();
                         });
                       },
@@ -122,7 +123,7 @@ class _TaskBodyState extends State<TaskBody> {
               child: Container(
                 child: AddScreen((value) {
                   setState(() {
-                    DBProvider.db.insertTask(Task(null, value));
+                    _con.insertTask(value);
                     updateTaskList();
                   });
                 }, ''),
@@ -156,7 +157,7 @@ class _TaskBodyState extends State<TaskBody> {
                 builder: (context) => SingleChildScrollView(
                   child: Container(
                     child: AddScreen((value) {
-                      DBProvider.db.updateTask(Task(lst[index].id, value));
+                      _con.updateTask(lst, value, index);
                       updateTaskList();
                     }, lst[index].name),
                   ),
@@ -169,7 +170,7 @@ class _TaskBodyState extends State<TaskBody> {
                 Icons.delete_forever_outlined,
               ),
               onTap: () {
-                DBProvider.db.deleteOneTask(lst[index].id);
+                _con.deleteTask(lst, index);
                 updateTaskList();
               }),
         );
